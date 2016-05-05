@@ -59,7 +59,7 @@ class C_Widget_Gallery extends WP_Widget
     public function __construct()
     {
         $widget_ops = array('classname' => 'ngg_images', 'description' => __('Add recent or random images from the galleries', 'nggallery'));
-        $this->WP_Widget('ngg-images', __('NextGEN Widget', 'nggallery'), $widget_ops);
+        parent::__construct('ngg-images', __('NextGEN Widget', 'nggallery'), $widget_ops);
     }
     public function form($instance)
     {
@@ -110,8 +110,8 @@ class C_Widget_Gallery extends WP_Widget
     public function widget($args, $instance)
     {
         $router = C_Router::get_instance();
-        wp_enqueue_style('nextgen_widgets_style', $router->get_static_url('photocrati-widget#widgets.css'));
-        wp_enqueue_style('nextgen_basic_thumbnails_style', $router->get_static_url('photocrati-nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.css'));
+        wp_enqueue_style('nextgen_widgets_style', $router->get_static_url('photocrati-widget#widgets.css'), FALSE, NGG_SCRIPT_VERSION);
+        wp_enqueue_style('nextgen_basic_thumbnails_style', $router->get_static_url('photocrati-nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.css'), FALSE, NGG_SCRIPT_VERSION);
         // these are handled by extract() but I want to silence my IDE warnings that these vars don't exist
         $before_widget = NULL;
         $before_title = NULL;
@@ -159,7 +159,7 @@ class C_Widget_MediaRSS extends WP_Widget
     public function __construct()
     {
         $widget_ops = array('classname' => 'ngg_mrssw', 'description' => __('Widget that displays Media RSS links for NextGEN Gallery.', 'nggallery'));
-        $this->WP_Widget('ngg-mrssw', __('NextGEN Media RSS', 'nggallery'), $widget_ops);
+        parent::__construct('ngg-mrssw', __('NextGEN Media RSS', 'nggallery'), $widget_ops);
     }
     public function form($instance)
     {
@@ -215,7 +215,7 @@ class C_Widget_Slideshow extends WP_Widget
     public function __construct()
     {
         $widget_ops = array('classname' => 'widget_slideshow', 'description' => __('Show a NextGEN Gallery Slideshow', 'nggallery'));
-        $this->WP_Widget('slideshow', __('NextGEN Slideshow', 'nggallery'), $widget_ops);
+        parent::__construct('slideshow', __('NextGEN Slideshow', 'nggallery'), $widget_ops);
     }
     public function form($instance)
     {
@@ -250,8 +250,8 @@ class C_Widget_Slideshow extends WP_Widget
     public function widget($args, $instance)
     {
         $router = C_Router::get_instance();
-        wp_enqueue_style('nextgen_widgets_style', $router->get_static_url('photocrati-widget#widgets.css'));
-        wp_enqueue_style('nextgen_basic_slideshow_style', $router->get_static_url('photocrati-nextgen_basic_gallery#slideshow/nextgen_basic_slideshow.css'));
+        wp_enqueue_style('nextgen_widgets_style', $router->get_static_url('photocrati-widget#widgets.css'), FALSE, NGG_SCRIPT_VERSION);
+        wp_enqueue_style('nextgen_basic_slideshow_style', $router->get_static_url('photocrati-nextgen_basic_gallery#slideshow/nextgen_basic_slideshow.css'), FALSE, NGG_SCRIPT_VERSION);
         // these are handled by extract() but I want to silence my IDE warnings that these vars don't exist
         $before_widget = NULL;
         $before_title = NULL;
