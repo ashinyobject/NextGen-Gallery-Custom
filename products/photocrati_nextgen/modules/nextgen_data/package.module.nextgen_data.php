@@ -3022,7 +3022,8 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
             } elseif (isset($gallery->slug)) {
                 $fs = C_Fs::get_instance();
                 $basepath = C_NextGen_Settings::get_instance()->gallerypath;
-                $retval = $fs->join_paths($basepath, $gallery->slug);
+                $monthyear = strtolower(date("M-Y"));
+                $retval = $fs->join_paths($basepath, $monthyear.'/'.$gallery->slug);
             }
         }
         $root_type = defined('NGG_GALLERY_ROOT_TYPE') ? NGG_GALLERY_ROOT_TYPE : 'site';
