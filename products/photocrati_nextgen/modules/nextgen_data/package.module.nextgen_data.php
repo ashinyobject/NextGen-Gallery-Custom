@@ -1210,8 +1210,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
             if ($image_id = $this->object->_image_mapper->save($image)) {
                 try {
                     // Try writing the image
-                    $fp = fopen($abs_filename, 'w');
-                    fwrite($fp, $data);
+                    $fp = fopen($abs_filename, 'wb');
+                    fwrite($fp, $this->maybe_base64_decode($data));
                     fclose($fp);
                     if ($settings->imgBackup) {
                         $this->object->backup_image($image);
@@ -1254,6 +1254,18 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
             @ini_set('memory_limit', $memory_limit . 'M');
         }
         return $retval;
+    }
+    function maybe_base64_decode($data)
+    {
+        $decoded = base64_decode($data);
+        if ($decoded === FALSE) {
+            return $data;
+        } else {
+            if (base64_encode($decoded) == $data) {
+                return base64_decode($data);
+            }
+        }
+        return $data;
     }
     function import_gallery_from_fs($abspath, $gallery_id = FALSE, $create_new_gallerypath = TRUE, $gallery_title = NULL, $filenames = array())
     {
@@ -2106,7 +2118,59 @@ class C_Image_Wrapper
             $columns = 0;
         }
         // Public variables
-        $defaults = array('errmsg' => '', 'error' => FALSE, 'imageURL' => '', 'thumbURL' => '', 'imagePath' => '', 'thumbPath' => '', 'href' => '', 'thumbPrefix' => 'thumbs_', 'thumbFolder' => '/thumbs/', 'galleryid' => 0, 'pid' => 0, 'filename' => '', 'description' => '', 'alttext' => '', 'imagedate' => '', 'exclude' => '', 'thumbcode' => '', 'name' => '', 'path' => '', 'title' => '', 'pageid' => 0, 'previewpic' => 0, 'style' => $columns > 0 ? 'style="width:' . floor(100 / $columns) . '%;"' : '', 'hidden' => FALSE, 'permalink' => '', 'tags' => '');
+        $defaults = array(
+            'errmsg' => '',
+            // Error message to display, if any
+            'error' => FALSE,
+            // Error state
+            'imageURL' => '',
+            // URL Path to the image
+            'thumbURL' => '',
+            // URL Path to the thumbnail
+            'imagePath' => '',
+            // Server Path to the image
+            'thumbPath' => '',
+            // Server Path to the thumbnail
+            'href' => '',
+            // A href link code
+            // Mostly constant
+            'thumbPrefix' => 'thumbs_',
+            // FolderPrefix to the thumbnail
+            'thumbFolder' => '/thumbs/',
+            // Foldername to the thumbnail
+            // Image Data
+            'galleryid' => 0,
+            // Gallery ID
+            'pid' => 0,
+            // Image ID
+            'filename' => '',
+            // Image filename
+            'description' => '',
+            // Image description
+            'alttext' => '',
+            // Image alttext
+            'imagedate' => '',
+            // Image date/time
+            'exclude' => '',
+            // Image exclude
+            'thumbcode' => '',
+            // Image effect code
+            // Gallery Data
+            'name' => '',
+            // Gallery name
+            'path' => '',
+            // Gallery path
+            'title' => '',
+            // Gallery title
+            'pageid' => 0,
+            // Gallery page ID
+            'previewpic' => 0,
+            // Gallery preview pic
+            'style' => $columns > 0 ? 'style="width:' . floor(100 / $columns) . '%;"' : '',
+            'hidden' => FALSE,
+            'permalink' => '',
+            'tags' => '',
+        );
         // convert the image to an array and apply the defaults
         $this->_orig_image = $image;
         $image = (array) $image;
@@ -2611,11 +2675,8 @@ class C_NextGen_Metadata extends C_Component
     function get_saved_meta($object = false)
     {
         $meta = $this->image->meta_data;
-        if (!isset($meta['saved'])) {
-            $meta['saved'] = FALSE;
-        }
-        //check if we already import the meta data to the database
-        if (!is_array($meta) || $meta['saved'] != true) {
+        // Check if we already import the meta data to the database
+        if (!is_array($meta) || !isset($meta['saved']) || $meta['saved'] !== TRUE) {
             return false;
         }
         // return one element if requested
@@ -3096,8 +3157,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
             } elseif (isset($gallery->slug)) {
                 $fs = C_Fs::get_instance();
                 $basepath = C_NextGen_Settings::get_instance()->gallerypath;
-                $monthyear = strtolower(date("M-Y"));
-                $retval = $fs->join_paths($basepath, $monthyear. '/' .sanitize_file_name(sanitize_title($gallery->slug)));
+                $retval = $fs->join_paths($basepath, sanitize_file_name(sanitize_title($gallery->slug)));
             }
         }
         $root_type = defined('NGG_GALLERY_ROOT_TYPE') ? NGG_GALLERY_ROOT_TYPE : 'site';
